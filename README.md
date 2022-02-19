@@ -1,7 +1,7 @@
 # youtube-viewer (for Windows)
-A lightweight application for searching and playing videos from YouTube.
+A lightweight application for searching and playing videos from YouTube
 
-All credits go to [`youtube-viewer`](https://github.com/trizen/youtube-viewer).
+All credits go to Trizen's [`youtube-viewer`](https://github.com/trizen/youtube-viewer).
 
 ### youtube-viewer
 * command-line interface to Youtube
@@ -17,11 +17,19 @@ pip3 install --user youtube-search-python
 
 # Roadmap
 
-- [ ] Enable `:back` function
-    - [ ] Save result pages into array
+- [x] Enable `:back` function
+    - [x] Save result pages into array
+- [ ] Differentiate "first prompt" mode from "complete" mode.
+- [ ] Save local watched videos into text file
+    - [ ] Set colors to output
+    - [ ] Use a different color for watched videos
+    - [ ] Put this setting on configuration file
+- [ ] Add support for playlists
+    - [ ] Differentiate `watch?v=` from `playlist?list=`
 - [ ] Complete functionality of the interactive help from Trizen
 
-(For search mode)
+(Complete help)
+
 ```
 # Base
 [keywords]        : search for YouTube videos ------------------------> Done!
@@ -30,41 +38,9 @@ pip3 install --user youtube-search-python
 [playlist-url]    : display videos from a playlistURL
 :playlist=ID      : display videos from a playlistID
 
-# Actions
-:login            : will prompt you for login
-:logout           : will delete the authentication key
-
-# Others
-:r(eturn)         : return to previous page of results
-:refresh          : refresh the current list of results
-:dv=i             : display the data structure of result i
--argv -argv2=v    : apply some arguments (e.g.: -u=google)
-:reset, :reload   : restart the application
-:q, :quit, :exit  : close the application
-
-NOTES:
- 1. You can specify more options in a row, separated by spaces.
- 2. A stdin option is valid only if it begins with '=', ';' or ':'.
- 3. Quoting a group of space separated keywords or option-values,
-    the group will be considered a single keyword or a single value.
-
-** Example:
-    To search for playlists, insert: -p keywords
-```
-
-(For playlist mode)
-
-```
-# Base
-[keywords]        : search for YouTube videos
-[youtube-url]     : play a video by YouTube URL
-:v(ideoid)=ID     : play videos by YouTube video IDs
-[playlist-url]    : display videos from a playlistURL
-:playlist=ID      : display videos from a playlistID
-
 # Control
-:n(ext)           : get the next page of results
-:b(ack)           : get the previous page of results
+:n(ext)           : get the next page of results ---------------------> Done!
+:b(ack)           : get the previous page of results -----------------> Done!
 
 # Actions
 :login            : will prompt you for login
@@ -124,4 +100,35 @@ NOTES:
 :d18-20,1,2    -> download the selected videos: 18, 19, 20, 1 and 2.
 3 4 :next 9    -> play the 3rd and 4th videos from the current
                   page, go to the next page and play the 9th video.
+```
+
+(First prompt help)
+```
+# Base
+[keywords]        : search for YouTube videos ------------------------> Done!
+[youtube-url]     : play a video by YouTube URL ----------------------> Done!
+:v(ideoid)=ID     : play videos by YouTube video IDs -----------------> Done!
+[playlist-url]    : display videos from a playlistURL
+:playlist=ID      : display videos from a playlistID
+
+# Actions
+:login            : will prompt you for login
+:logout           : will delete the authentication key
+
+# Others
+:r(eturn)         : return to previous page of results
+:refresh          : refresh the current list of results
+:dv=i             : display the data structure of result i
+-argv -argv2=v    : apply some arguments (e.g.: -u=google)
+:reset, :reload   : restart the application
+:q, :quit, :exit  : close the application
+
+NOTES:
+ 1. You can specify more options in a row, separated by spaces.
+ 2. A stdin option is valid only if it begins with '=', ';' or ':'.
+ 3. Quoting a group of space separated keywords or option-values,
+    the group will be considered a single keyword or a single value.
+
+** Example:
+    To search for playlists, insert: -p keywords
 ```
