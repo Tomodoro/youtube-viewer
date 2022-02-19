@@ -47,7 +47,7 @@ pip3 install --user youtube-search-python
 :logout           : will delete the authentication key
 
 # YouTube
-:i(nfo)=i,i       : display more information
+:i(nfo)=i,i       : display more information -------------------------> Partial, only accepts one argument.
 :d(ownload)=i,i   : download the selected videos
 :c(omments)=i     : display video comments
 :r(elated)=i      : display related videos
