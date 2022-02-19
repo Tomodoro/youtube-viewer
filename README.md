@@ -17,6 +17,8 @@ pip3 install --user youtube-search-python
 
 # Roadmap
 
+- [ ] Enable `:back` function
+    - [ ] Save result pages into array
 - [ ] Complete functionality of the interactive help from Trizen
 
 (For search mode)
