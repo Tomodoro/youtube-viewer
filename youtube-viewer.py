@@ -13,7 +13,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #-------------------------------------------------------
 #  youtube-viewer
 #  Created on: 14 February 2022
-#  Latest edit on: 16 February 2022
+#  Latest edit on: 19 February 2022
 #  https://github.com/Tomodoro/youtube-viewer
 #-------------------------------------------------------
 
@@ -36,21 +36,20 @@ alan = "Allan please add details"
 #~~~~~~~~~~~~~~~~~~~~
 
 class obj:
-    """A generic class to hold the configuration file"""
+    """A generic class to hold the configuration file
+    """
     
     def __init__(self, dict1):
         self.__dict__.update(dict1)
 
 def dict2obj(dict1):
-    """Turns a dictionary into an object"""
+    """Turns a dictionary into an object
+    """
     
     return json.loads(json.dumps(dict1), object_hook=obj)
 
 def config_dir() -> str:
     """Check existence of the configuration folder
-
-    If the configuration folder does not exists, then it is created.
-    Currently the path is hardcoded to %APPDATA%/pkgname
     """
     
     appdata = os.getenv('APPDATA')
@@ -100,6 +99,8 @@ def halp() -> None:
     print("""
 # Base
 [keywords]        : search for YouTube videos
+[youtube-url]     : play a video by YouTube URL
+:v(ideoid)=ID     : play videos by YouTube video IDs
 
 # Actions
 :!video           : disables video window
@@ -120,7 +121,7 @@ NOTES:
 # Terminal size
 #~~~~~~~~~~~~~~~
 
-def terminal_size() -> int:
+def terminal_width() -> int:
     """Set the maximun width that the program output will take
 
     Reads the configuration file and checks get_term_width.
@@ -151,7 +152,7 @@ def check_media_player(player: str) -> None:
 
     else: print("\n[!] Please install a supported video player! (e.g.: mpv)\n")
 
-def play(novideo: bool, fs: bool, link: str, title: str, add: str ="") -> None:
+def play(novideo: bool, fs: bool, id: str, title: str, extra: str ="") -> None:
     """Plays the youtube link using the selected media player
     """
     
@@ -174,7 +175,7 @@ def play(novideo: bool, fs: bool, link: str, title: str, add: str ="") -> None:
 
     program_arg = program_arg.replace("*TITLE*",'"'+title+'"')
 
-    cmd = program_cmd +" "+ program_fs +" "+ program_novideo +" "+ program_arg +" "+link +" "+ add
+    cmd = program_cmd +" "+ program_fs +" "+ program_novideo +" "+ program_arg +" "+ "https://www.youtube.com/watch?v="+id +" "+ extra
     os.system(cmd)
     
 #~~~~~~~~~~~~~~~~~~~~~~~
@@ -346,6 +347,7 @@ def echo_VideosSearch_info(search: dict) -> None:
 
     print ("")
     upper = len(search.result()['result'])
+    video_list = []
     for i in range(upper):
         item = search.result()['result'][i]
         vid_number    = str(i+1)
@@ -353,20 +355,10 @@ def echo_VideosSearch_info(search: dict) -> None:
         chl_title     = item['channel']['name']
         published     = item['publishedTime']
         vid_views     = item['viewCount']['short']
-        duration      = item['duration']
 
         subitem = None
 
-        if duration is None:
-            if subitem is None:
-                id = item['id']
-                subitem = Video.getInfo(id)
-                
-            if subitem['isLiveNow']:
-                duration = "LIVE"
-
-            else:
-                duration = "ERROR"
+        duration = lambda string: "LIVE" if string is None else string
 
         if vid_views is None:
             if subitem is None:
@@ -394,7 +386,7 @@ def echo_VideosSearch_info(search: dict) -> None:
         if int(configClass.ascii_mode) == int(1):
             vid_title, chl_title = ascii_workaround(vid_title,chl_title)
 
-        c_total = terminal_size()
+        c_total = terminal_width()
 
         c1 = int(3)
         c4 = int(4)
@@ -418,64 +410,34 @@ def echo_VideosSearch_info(search: dict) -> None:
         print (chl_title[0:(c3-1)].ljust(c3), end=" ")
         print (published.rjust(c4), end=" ")
         print (vid_views.replace(" views", "").rjust(c5), end=" ")
-        print (duration.rjust(c6))
+        print ((duration(item['duration'])).rjust(c6))
 
     print("")
 
-def echo_Videoget_info(id: str) -> None:
-    """Print relevant information of the Videos.get dictionary
+    return video_list
 
-    This function analizes the desired data to be aquired
-    and prints it in a human legible way
+def echo_Videoget_info(id: str) -> None:
+    """Print information of the video
     """
 
     info = Video.getInfo(id)
 
-    duration = int(info['duration']['secondsText'])
-    if duration == 0:
-        duration = "LIVE"
-    else:
-        duration = time.strftime('%H:%M:%S', time.gmtime(duration))
+    sep = ("\n"+('-' * terminal_width()))
 
-    description = info['description']
-    url = info['link']
-    vid_title = info['title']
-    chl_name = info['channel']['name']
-    chl_id = info['channel']['id']
-    vid_id = info['id']
-    category = info['category']
-    definition = alan
-    
-    likes = alan
-    raiting = alan
-    comments = alan
-    vid_views = alan
-    published = info['publishDate']
-
-    col = terminal_size()
-    title = "=>> "+vid_title+" <<="
+    duration = lambda string: \
+               time.strftime('%H:%M:%S', time.gmtime(int(string))) \
+               if  int(string) != 0 else "LIVE"
     
     print ("")    
-    print ("=> Description")
-    print ('-' * col)
-    print (description)
-    print ('-' * col)
-    print ("=> URL:", url)
-    print ('-' * col)
-    print (title.center(col))
-    print ("")
-    print ("-> Channel   :", chl_name)
-    print ("-> ChannelID :", chl_id)
-    print ("-> VideoID   :", vid_id)
-    print ("-> Category  :", category)
-##    print ("-> Definition:", definition)
-    print ("-> Duration  :", duration)
-##    print ("-> Likes     :", likes)
-##    print ("-> Raiting   :", raiting)
-##    print ("-> Comments  :" ,comments)
-##    print ("-> Views     :", vid_views)
-    print ("-> Published :", published)
-    print ('-' * col)
+    print ("=> Description", sep, info['description'], sep)
+    print ("=> URL: %s" % info['link'], sep)
+    print (("=>> "+info['title']+" <<=\n").center(terminal_width()))
+    print ("-> Channel   : %s" % info['channel']['name'])
+    print ("-> ChannelID : %s" % info['channel']['id'])
+    print ("-> VideoID   : %s" % info['id'])
+    print ("-> Category  : %s" % info['category'])
+    print ("-> Duration  : %s" % duration(info['duration']['secondsText']))
+    print ("-> Published : %s" % info['publishDate'] , sep)
     
 #~~~~~~~~~~~
 # Main loop
@@ -498,12 +460,22 @@ def main(PS1):
             if search is None:
                 print ('\033[1A> Rick Astley - Never Gonna Give You Up (Official Music Video)')
                 echo_Videoget_info('dQw4w9WgXcQ')
-                play(True, False, "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "", "--no-terminal")
+                play(True, False, "dQw4w9WgXcQ", "", "--no-terminal")
                 continue
             
             echo_VideosSearch_info(search)
 
-        if inp == ":q" or inp == ":quit" or inp == ":exit":
+        elif inp[0:3] == ":v=":
+            id = inp.replace(":v=", "")
+            echo_Videoget_info(id)
+            play(novideo, False, id, "")
+
+        elif  inp[0:9] == ":videoid=":
+            id = inp.replace(":videoid=", "")
+            echo_Videoget_info(id)
+            play(novideo, False, id, "")
+
+        elif inp == ":q" or inp == ":quit" or inp == ":exit":
             exit()
 
         elif inp == ":h" or inp == ":help":
@@ -521,14 +493,16 @@ def main(PS1):
             novideo = False
             echo_VideosSearch_info(search)
 
-        elif inp[0] == ":" or inp[0] == "=" or inp[0] == ";":
-            options(inp,search)
+        elif inp[:4] == "http":
+            id = inp.replace("https://www.youtube.com/watch?v=", "")
+            echo_Videoget_info(id)
+            play(novideo, False, id, "")
 
         elif inp.isdigit() and search is not None:
-            echo_Videoget_info(search.result()['result'][int(inp)-1]['id'])
-            link  = search.result()['result'][int(inp)-1]['link']
+            id = search.result()['result'][int(inp)-1]['id']
+            echo_Videoget_info(id)
             title = search.result()['result'][int(inp)-1]['title']
-            play(novideo, False, link, title)
+            play(novideo, False, id, title)
 
         else:
             search = VideosSearch(inp)
