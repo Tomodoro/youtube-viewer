@@ -1,4 +1,4 @@
-pkgver = "0.1.0-alpha.2"
+pkgver = "0.1.0-alpha.3"
 """Youtube Viewer - %s
 
 Copyright (C) 2022 Tomodoro *EMAIL REDACTED*
@@ -14,7 +14,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #-------------------------------------------------------
 #  youtube-viewer
 #  Created on: 14 February 2022
-#  Latest edit on: 16 February 2022
+#  Latest edit on: 19 February 2022
 #  https://github.com/Tomodoro/youtube-viewer
 #-------------------------------------------------------
 
@@ -111,7 +111,7 @@ def halp() -> None:
 :video            : enables video window
 
 # Youtube
-:i(nfo)=i,i       : display more information
+:i(nfo)=i         : display more information
 
 # Others
 :q, :quit, :exit  : close the application
@@ -153,8 +153,6 @@ def terminal_width() -> int:
 
 def check_media_player(player: str) -> None:
     """Check existence of selected media player
-
-    If the media player is not found, a warning is arised.
     """
 
     if (which(player) is not None) is True: pass
@@ -348,10 +346,10 @@ def echo_VideosSearch_info(search: dict) -> None:
                 they use two spaces instead of one and break columns
                 of the search output.
 
-                A workaround is available to recognize emojis and
+                A workaround is planned in order to recognize emojis and
                 substract one space per emoji in the overall width,
-                but this slows down the output as it reads char by
-                char so it is disabled by deafult.
+                but this would slow down the output as it reads char by
+                char so it would not be enabled by default.
     """
 
     print ("")
@@ -444,7 +442,7 @@ def echo_Videoget_info(id: str) -> None:
     print ("-> Category  : %s" % info['category'])
     print ("-> Duration  : %s" % duration(info['duration']['secondsText']))
     print ("-> Published : %s" % info['publishDate'] , sep)
-    
+
 #~~~~~~~~~~~
 # Main loop
 #~~~~~~~~~~~
@@ -478,41 +476,39 @@ def main(PS1):
             else:            
                 echo_VideosSearch_info(search_list[search_index])
 
-        elif inp[0] == ":":
-            if inp == ":page=":
-                index = inp[7:]
+        elif inp[0] == ":" or inp[0] == ";" or inp[0] == "=":
+            inp = inp[1:]
+            if inp[0:5] == "page=":
+                index = inp[5:]
                 if  index.isdigit():
-                    pass
+                    if int(index)-1 <= len(search_list):
+                        search_index = int(index)-1
+                        echo_VideosSearch_info(search_list[search_index])
+
+                    else:
+                        print ("\n[!] %s is out of range.\n" % index)
 
                 else:
                     print ("\n[!] %s is not a number.\n" % index)
                     continue
 
-                if int(index) <= len(search_list):
-                    search_index = index
-                    echo_VideosSearch_info(search_list[search_index])
-
-                else:
-                    print ("\n[!] %s is out of range.\n" % index)
-                    continue
-
-            elif inp[0:3] == ":v=":
-                id = inp.replace(":v=", "")
+            elif inp[0:2] == "v=":
+                id = inp.replace("v=", "")
                 echo_Videoget_info(id)
                 play(novideo, False, id, "")
 
-            elif  inp[0:9] == ":videoid=":
-                id = inp.replace(":videoid=", "")
+            elif  inp[0:8] == "videoid=":
+                id = inp.replace("videoid=", "")
                 echo_Videoget_info(id)
                 play(novideo, False, id, "")
 
-            elif inp == ":q" or inp == ":quit" or inp == ":exit":
+            elif inp == "q" or inp == "quit" or inp == "exit":
                 exit()
 
-            elif inp == ":h" or inp == ":help":
+            elif inp == "h" or inp == "help":
                 halp()
 
-            elif inp == ":n" or inp == ":next":
+            elif inp == "n" or inp == "next":
                 search_index += 1
                 if search_index <= len(search_list)-1:
                     echo_VideosSearch_info(search_list[search_index])
@@ -522,7 +518,7 @@ def main(PS1):
                     search_list.append(search.result())
                     echo_VideosSearch_info(search_list[search_index])
 
-            elif inp == ":b" or inp == ":back":
+            elif inp == "b" or inp == "back":
                 search_index -= 1
                 if len(search_list) == 0:
                     search_index += 1
@@ -538,16 +534,16 @@ def main(PS1):
 
                 echo_VideosSearch_info(search_list[search_index])
 
-            elif inp == ":!video":
+            elif inp == "!video":
                 novideo = True
                 echo_VideosSearch_info(search_list[search_index])
 
-            elif inp == ":video":
+            elif inp == "video":
                 novideo = False
                 echo_VideosSearch_info(search_list[search_index])
                 
-            elif inp[0:3] == ":i=":
-                number = inp.replace(":i=", "")
+            elif inp[0:3] == "i=":
+                number = inp.replace("i=", "")
                 if not number.isdigit():
                     print ("\n[!] No video selected!")
                     echo_VideosSearch_info(search_list[search_index])
@@ -566,8 +562,28 @@ def main(PS1):
                     aga = input("\n=>> Press ENTER to continue...")
                     print (aga)
 
+            elif inp[0:5] == "info=":
+                number = inp.replace("info=", "")
+                if not number.isdigit():
+                    print ("\n[!] No video selected!")
+                    echo_VideosSearch_info(search_list[search_index])
+
+                elif int(number) > len(search_list[search_index]['result']):
+                    print ("\n[!] No video selected!")
+                    echo_VideosSearch_info(search_list[search_index])
+
+                elif int(number) <= 0:
+                    print ("\n[!] No video selected!")
+                    echo_VideosSearch_info(search_list[search_index])  
+
+                else:
+                    id = search_list[search_index]['result'][int(number)-1]['id']
+                    echo_Videoget_info(id)
+                    aga = input("\n=>> Press ENTER to continue...")
+                    print (aga)                
+
             else:
-                print ("\n[!] Invalid option <%s>\n" % inp[1:])
+                print ("\n[!] Invalid option <%s>\n" % inp)
 
         elif inp[:4] == "http":
             id = inp.replace(configClass.youtube_video_url, "")
