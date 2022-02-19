@@ -17,8 +17,12 @@ pip3 install --user youtube-search-python
 
 # Roadmap
 
-- [x] Enable `:back` function
+- [x] Implement `:back` function
     - [x] Save result pages into array
+- [ ] Implement multiple-select reproduction
+    - [ ] Save input into array
+    - [ ] Apply regex on input
+    - [ ] Save videos into array
 - [ ] Differentiate "first prompt" mode from "complete" mode.
 - [ ] Save local watched videos into text file
     - [ ] Set colors to output
@@ -68,7 +72,7 @@ pip3 install --user youtube-search-python
 :beg :end         : jump to first or last page of results
 
 # Playing
-<number>          : play the corresponding video
+<number>          : play the corresponding video ---------------------> Done!
 3-8, 3..8         : same as 3 4 5 6 7 8
 8-3, 8..3         : same as 8 7 6 5 4 3
 8 2 12 4 6 5 1    : play the videos in a specific order
