@@ -9,10 +9,10 @@ All credits go to Trizen's [`youtube-viewer`](https://github.com/trizen/youtube-
 ![youtube-viewer](https://i.postimg.cc/HnbTypwG/Screenshot-5.png)
 
 ## Prerequisites
-**Program**: mpv<br>
+**Program**: mpv (recommended)<br>
 **Program**: yt-dlp<br>
 **Program**: Python 3<br>
-**Program**: vlc (alternative to mpv, mostly broken for this use case)<br>
+**Program**: vlc (alternative to mpv)<br>
 
 pip packages: youtube-search-python
 ```
@@ -21,8 +21,6 @@ pip3 install --user youtube-search-python
 
 
 All* programs can be easily installed with [Chocolatey](https://chocolatey.org/) and get automatically added to PATH.
-
-
 
 ## Known issues
 1. *VLC must be added to path manually.
