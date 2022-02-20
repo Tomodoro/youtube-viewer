@@ -26,7 +26,10 @@ All* programs can be easily installed with [Chocolatey](https://chocolatey.org/)
 
 ## Known issues
 1. *VLC must be added to path manually.
-2. VLC gets pushed to the background with `:!video` and it must be closed from Task Manager.
+
+~~2. VLC gets pushed to the background with `:!video` and it must be closed from Task Manager.~~
+
+2. VLC will always show GUI, even with `!video` option.
 3. VLC *needs* that `youtube-dl` is available on PATH, even if it is `yt-dlp` renamed.
 4. json module from python cannot handle backslashes, therefore the full path of vlc excecutable cannot be set there
 
