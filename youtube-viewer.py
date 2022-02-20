@@ -1,4 +1,4 @@
-pkgver = "0.1.0-alpha.3"
+pkgver = "0.1.0-alpha.4"
 """Youtube Viewer - %s
 
 Copyright (C) 2022 Tomodoro *EMAIL REDACTED*
@@ -106,18 +106,18 @@ def halp() -> None:
 :n(ext)           : get the next page of results
 :b(ack)           : get the next page of results
 
-# Actions
-:!video           : disables video window
-:video            : enables video window
-
 # Youtube
 :i(nfo)=i         : display more information
 
 # Others
 :q, :quit, :exit  : close the application
 
+# Extra
+:h, :help         : prints this help
+:(!)video         : disables|enables video window
+
 NOTES:
- 1. A stdin option is valid only if it begins with ':'.
+ 1. A stdin option is valid only if it begins with '=', ';' or ':'.
 """)
     
     aga = input("=>> Press ENTER to continue...")
@@ -450,6 +450,11 @@ configJson  = config_file( config_dir() )
 configDict   = json.load( open(configJson) )
 configClass  = dict2obj(configDict)
 
+def rick() -> None:
+    print ('\033[1A> Rick Astley - Never Gonna Give You Up (Official Music Video)')
+    echo_Videoget_info('dQw4w9WgXcQ')
+    play(True, False, "dQw4w9WgXcQ", "", "--no-terminal")
+
 first_prompt = "=>> Search for YouTube videos (:h for help) \n> "
 
 def main(PS1):
@@ -466,32 +471,31 @@ def main(PS1):
     while True:
         inp = input(PS1)
 
+        # Catch empty input
+        #~~~~~~~~~~~~~~~~~~~
         if inp == "":
             if len(search_list) == 0:
-                print ('\033[1A> Rick Astley - Never Gonna Give You Up (Official Music Video)')
-                echo_Videoget_info('dQw4w9WgXcQ')
-                play(True, False, "dQw4w9WgXcQ", "", "--no-terminal")
+                rick()
                 continue
 
             else:            
                 echo_VideosSearch_info(search_list[search_index])
 
+        # All this first chars are valid for options input
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         elif inp[0] == ":" or inp[0] == ";" or inp[0] == "=":
             inp = inp[1:]
-            if inp[0:5] == "page=":
-                index = inp[5:]
-                if  index.isdigit():
-                    if int(index)-1 <= len(search_list):
-                        search_index = int(index)-1
-                        echo_VideosSearch_info(search_list[search_index])
 
-                    else:
-                        print ("\n[!] %s is out of range.\n" % index)
+            # Catch empty input
+            #~~~~~~~~~~~~~~~~~~~
+            if inp == "":
+                rick()
+                continue
 
-                else:
-                    print ("\n[!] %s is not a number.\n" % index)
-                    continue
+            # Base section
+            #~~~~~~~~~~~~~~
 
+            # :v(ideoid)=ID : play videos by YouTube video IDs
             elif inp[0:2] == "v=":
                 id = inp.replace("v=", "")
                 echo_Videoget_info(id)
@@ -502,12 +506,12 @@ def main(PS1):
                 echo_Videoget_info(id)
                 play(novideo, False, id, "")
 
-            elif inp == "q" or inp == "quit" or inp == "exit":
-                exit()
+            # :playlist=ID : display videos from a playlistID (pending)
 
-            elif inp == "h" or inp == "help":
-                halp()
-
+            # Control section
+            #~~~~~~~~~~~~~~~~~
+            
+            # :n(ext) : get the next page of results
             elif inp == "n" or inp == "next":
                 search_index += 1
                 if search_index <= len(search_list)-1:
@@ -518,6 +522,7 @@ def main(PS1):
                     search_list.append(search.result())
                     echo_VideosSearch_info(search_list[search_index])
 
+            # :b(ack) - get the previous page of results
             elif inp == "b" or inp == "back":
                 search_index -= 1
                 if len(search_list) == 0:
@@ -532,35 +537,32 @@ def main(PS1):
                     print ("\n[!] This is the first page.\n")
                     continue
 
-                echo_VideosSearch_info(search_list[search_index])
-
-            elif inp == "!video":
-                novideo = True
-                echo_VideosSearch_info(search_list[search_index])
-
-            elif inp == "video":
-                novideo = False
-                echo_VideosSearch_info(search_list[search_index])
-                
-            elif inp[0:3] == "i=":
-                number = inp.replace("i=", "")
-                if not number.isdigit():
-                    print ("\n[!] No video selected!")
-                    echo_VideosSearch_info(search_list[search_index])
-
-                elif int(number) > len(search_list[search_index]['result']):
-                    print ("\n[!] No video selected!")
-                    echo_VideosSearch_info(search_list[search_index])
-
-                elif int(number) <= 0:
-                    print ("\n[!] No video selected!")
-                    echo_VideosSearch_info(search_list[search_index])  
-
                 else:
+                    echo_VideosSearch_info(search_list[search_index])
+
+            # Actions section
+            #~~~~~~~~~~~~~~~~~
+
+            # :login : will prompt you for login (pending)
+            # :logout : will delete the authentication key (pending)
+
+            # Youtube section
+            #~~~~~~~~~~~~~~~~~
+
+            # :i(nfo) : display more information
+            elif inp[0:2] == "i=":
+                number = inp.replace("i=", "")
+                if number.isdigit() \
+                   and int(number) <= len(search_list[search_index]['result']) \
+                   and int(number) >= 0:
                     id = search_list[search_index]['result'][int(number)-1]['id']
                     echo_Videoget_info(id)
                     aga = input("\n=>> Press ENTER to continue...")
                     print (aga)
+
+                else:
+                    print ("\n[!] No video selected!")
+                    echo_VideosSearch_info(search_list[search_index])
 
             elif inp[0:5] == "info=":
                 number = inp.replace("info=", "")
@@ -580,31 +582,82 @@ def main(PS1):
                     id = search_list[search_index]['result'][int(number)-1]['id']
                     echo_Videoget_info(id)
                     aga = input("\n=>> Press ENTER to continue...")
-                    print (aga)                
+                    print (aga)
 
+            # :page=i : jump to page i of results
+            elif inp[0:5] == "page=":
+                index = inp[5:]
+                if  index.isdigit():
+                    if int(index)-1 <= len(search_list):
+                        search_index = int(index)-1
+                        echo_VideosSearch_info(search_list[search_index])
+
+                    else:
+                        print ("\n[!] %s is out of range.\n" % index)
+
+                else:
+                    print ("\n[!] %s is not a number.\n" % index)
+                    continue
+
+            # :beg :end : jump to first or last page of results
+
+            # Playing section
+            #~~~~~~~~~~~~~~~~~
+
+            # Others section
+            #~~~~~~~~~~~~~~~~
+            
+            # :q, :quit, :exit  : close the application
+            elif inp == "q" or inp == "quit" or inp == "exit":
+                exit()
+
+            # Extra section
+            #~~~~~~~~~~~~~~~~
+
+            # :h, :help : prints this help
+            elif inp == "h" or inp == "help":
+                halp()
+
+            # (!)video - disables|enables video window
+            elif inp == "!video":
+                novideo = True
+                echo_VideosSearch_info(search_list[search_index])
+
+            elif inp == "video":
+                novideo = False
+                echo_VideosSearch_info(search_list[search_index])
+
+            # Option not recognized
+            #~~~~~~~~~~~~~~~~~~~~~~~
             else:
                 print ("\n[!] Invalid option <%s>\n" % inp)
 
-        elif inp[:4] == "http":
-            id = inp.replace(configClass.youtube_video_url, "")
-            echo_Videoget_info(id)
-            play(novideo, False, id, "")
-
+        # Playing section (non-option)
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         elif inp.isdigit() and len(search_list) !=0:
-            if int(inp) == 0:
-                print ("\n[!] No video selected!")
-                echo_VideosSearch_info(search_list[search_index])
-
-            elif int(inp) > len(search_list):
-                print("\n[!] No video selected!")
-                echo_VideosSearch_info(search_list[search_index])
-
-            else:
+            if int(inp) != 0 \
+               and int(inp) <= len(search_list):
                 id = search_list[search_index]['result'][int(inp)-1]['id']
                 echo_Videoget_info(id)
                 title = search_list[search_index]['result'][int(inp)-1]['title']
                 play(novideo, False, id, title)
 
+            else:    
+                print ("\n[!] No video selected!")
+                echo_VideosSearch_info(search_list[search_index])                
+
+        # Base section (non-option)
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        
+        # Catch URL (pending recognize video or playlist)
+        elif inp[:4] == "http":
+            # [youtube-url] : play a video by YouTube URL
+            # [playlist-url] : display videos from a playlistURL
+            id = inp.replace(configClass.youtube_video_url, "")
+            echo_Videoget_info(id)
+            play(novideo, False, id, "")
+
+        # [keywords] : search for YouTube videos
         else:
             search = VideosSearch(inp)
             search_list = []
