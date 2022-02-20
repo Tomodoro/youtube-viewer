@@ -136,3 +136,22 @@ NOTES:
 ** Example:
     To search for playlists, insert: -p keywords
 ```
+
+# Future of the project
+
+There main reasons this project exists are:
+1. I like youtube-viewer, but upstream does not provide support for Windows.
+2. I tried to install Trizen's youtube-viewer on Strawberry Perl (Windows) and failed.
+3. I mostly open Youtube videos with mpv by copying the url to the terminal.
+4. I prefer to skip the web browser thing all togheter and search the video from the terminal.
+
+For the program to get a beta release it must provide all upstream features, it does not matter if the code is messy or not optimized.
+Once the last part gets arranged the program should finally hit 0.1.0 (and who knows what the future awaits!).
+
+At the moment of writing this repository is more like a storage for the code than an active development branch, so I will not hang around very ofter.
+HOWEVER if you really like this project and would like to see it thrive, please open a pull request with your contribution.
+
+If I don't show up (I sometimes get really busy and disapear for almost a year) and that halts the development,
+feel free to fork it. I don't care if someone else takes over from here, I only want this to exists. Just respect the licence.
+
+Regards, Tomodoro
