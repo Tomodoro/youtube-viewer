@@ -9,11 +9,26 @@ All credits go to Trizen's [`youtube-viewer`](https://github.com/trizen/youtube-
 ![youtube-viewer](https://i.postimg.cc/HnbTypwG/Screenshot-5.png)
 
 ## Prerequisites
-Python 3<br>
+**Program**: mpv<br>
+**Program**: yt-dlp<br>
+**Program**: Python 3<br>
+**Program**: vlc (alternative to mpv, mostly broken for this use case)<br>
+
 pip packages: youtube-search-python
 ```
 pip3 install --user youtube-search-python
 ```
+
+
+All* programs can be easily installed with [Chocolatey](https://chocolatey.org/) and get automatically added to PATH.
+
+
+
+## Known issues
+1. *VLC must be added to path manually.
+2. VLC gets pushed to the background with `:!video` and it must be closed from Task Manager.
+3. VLC *needs* that `youtube-dl` is available on PATH, even if it is `yt-dlp` renamed.
+4. json module from python cannot handle backslashes, therefore the full path of vlc excecutable cannot be set there
 
 # Roadmap
 
