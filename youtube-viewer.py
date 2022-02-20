@@ -1,4 +1,4 @@
-pkgver = "0.1.0-alpha.4"
+pkgver = "0.1.0-alpha.5"
 """Youtube Viewer - %s
 
 Copyright (C) 2022 Tomodoro *EMAIL REDACTED*
@@ -14,7 +14,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #-------------------------------------------------------
 #  youtube-viewer
 #  Created on: 14 February 2022
-#  Latest edit on: 19 February 2022
+#  Latest edit on: 20 February 2022
 #  https://github.com/Tomodoro/youtube-viewer
 #-------------------------------------------------------
 
@@ -81,6 +81,13 @@ def config_file(data_dir: str) -> None:
                 "cmd": "mpv",
                 "fs": "--fullscreen",
                 "novideo": "--no-video"
+            },
+        "vlc":
+            {
+                "arg": "--quiet --play-and-exit --no-video-title-show --input-title-format=*TITLE*",
+                "cmd": "vlc",
+                "fs": "--fullscreen",
+                "novideo": "--novideo"
             }
     },
     "youtube_video_url": "https://www.youtube.com/watch?v="
@@ -115,6 +122,7 @@ def halp() -> None:
 # Extra
 :h, :help         : prints this help
 :(!)video         : disables|enables video window
+:(!)fullscreen    : disables|enables fullscreen playback
 
 NOTES:
  1. A stdin option is valid only if it begins with '=', ';' or ':'.
@@ -453,7 +461,7 @@ configClass  = dict2obj(configDict)
 def rick() -> None:
     print ('\033[1A> Rick Astley - Never Gonna Give You Up (Official Music Video)')
     echo_Videoget_info('dQw4w9WgXcQ')
-    play(True, False, "dQw4w9WgXcQ", "", "--no-terminal")
+    play(True, True, "dQw4w9WgXcQ", "")
 
 first_prompt = "=>> Search for YouTube videos (:h for help) \n> "
 
@@ -463,6 +471,7 @@ def main(PS1):
     search_list = []
     search_index = 0
     novideo = False
+    fullscreen = False
 
     if len(sys.argv) > 1 and sys.argv[1] == "--version":
         print("Youtube Viewer (for Windows) %s" % pkgver)
@@ -499,12 +508,12 @@ def main(PS1):
             elif inp[0:2] == "v=":
                 id = inp.replace("v=", "")
                 echo_Videoget_info(id)
-                play(novideo, False, id, "")
+                play(novideo, fullscreen, id, "")
 
             elif  inp[0:8] == "videoid=":
                 id = inp.replace("videoid=", "")
                 echo_Videoget_info(id)
-                play(novideo, False, id, "")
+                play(novideo, fullscreen, id, "")
 
             # :playlist=ID : display videos from a playlistID (pending)
 
@@ -527,9 +536,7 @@ def main(PS1):
                 search_index -= 1
                 if len(search_list) == 0:
                     search_index += 1
-                    print ('\033[1A> Rick Astley - Never Gonna Give You Up (Official Music Video)')
-                    echo_Videoget_info('dQw4w9WgXcQ')
-                    play(True, False, "dQw4w9WgXcQ", "", "--no-terminal")
+                    rick()
                     continue                   
 
                 elif search_index < 0:
@@ -627,6 +634,15 @@ def main(PS1):
                 novideo = False
                 echo_VideosSearch_info(search_list[search_index])
 
+            # (!)fullscreen - disables|enables fullscreen playback
+            elif inp == "!fullscreen":
+                fullscreen = False
+                echo_VideosSearch_info(search_list[search_index])
+
+            elif inp == "fullscreen":
+                fullscreen = True
+                echo_VideosSearch_info(search_list[search_index])
+
             # Option not recognized
             #~~~~~~~~~~~~~~~~~~~~~~~
             else:
@@ -636,11 +652,11 @@ def main(PS1):
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         elif inp.isdigit() and len(search_list) !=0:
             if int(inp) != 0 \
-               and int(inp) <= len(search_list):
+               and int(inp) <= len(search_list[search_index]['result']):
                 id = search_list[search_index]['result'][int(inp)-1]['id']
                 echo_Videoget_info(id)
                 title = search_list[search_index]['result'][int(inp)-1]['title']
-                play(novideo, False, id, title)
+                play(novideo, fullscreen, id, title)
 
             else:    
                 print ("\n[!] No video selected!")
@@ -655,7 +671,7 @@ def main(PS1):
             # [playlist-url] : display videos from a playlistURL
             id = inp.replace(configClass.youtube_video_url, "")
             echo_Videoget_info(id)
-            play(novideo, False, id, "")
+            play(novideo, fullscreen, id, "")
 
         # [keywords] : search for YouTube videos
         else:
