@@ -36,22 +36,22 @@ pip3 install --user youtube-search-python
 
 ```
 # Base
-[keywords]        : search for YouTube videos ------------------------> Done!
-[youtube-url]     : play a video by YouTube URL ----------------------> Done!
-:v(ideoid)=ID     : play videos by YouTube video IDs -----------------> Done!
+[keywords]        : search for YouTube videos ---------------------------> Done!
+[youtube-url]     : play a video by YouTube URL -------------------------> Done!
+:v(ideoid)=ID     : play videos by YouTube video IDs --------------------> Done!
 [playlist-url]    : display videos from a playlistURL
 :playlist=ID      : display videos from a playlistID
 
 # Control
-:n(ext)           : get the next page of results ---------------------> Done!
-:b(ack)           : get the previous page of results -----------------> Done!
+:n(ext)           : get the next page of results ------------------------> Done!
+:b(ack)           : get the previous page of results --------------------> Done!
 
 # Actions
 :login            : will prompt you for login
 :logout           : will delete the authentication key
 
 # YouTube
-:i(nfo)=i,i       : display more information -------------------------> Partial, only accepts one argument.
+:i(nfo)=i,i       : display more information ----------------------------> Partial, only accepts one argument.
 :d(ownload)=i,i   : download the selected videos
 :c(omments)=i     : display video comments
 :r(elated)=i      : display related videos
@@ -68,11 +68,11 @@ pip3 install --user youtube-search-python
 :(dis)like=i      : like or dislike a video
 :fav(orite)=i     : favorite a video
 :autoplay=i       : autoplay mode, starting from video i
-:page=i           : jump to page i of results -----------------------> Done!
+:page=i           : jump to page i of results --------------------------> Done!
 :beg :end         : jump to first or last page of results
 
 # Playing
-<number>          : play the corresponding video --------------------> Done!
+<number>          : play the corresponding video -----------------------> Done!
 3-8, 3..8         : same as 3 4 5 6 7 8
 8-3, 8..3         : same as 8 7 6 5 4 3
 8 2 12 4 6 5 1    : play the videos in a specific order
@@ -90,11 +90,11 @@ pip3 install --user youtube-search-python
 :dv=i             : display the data structure of result i
 -argv -argv2=v    : apply some arguments (e.g.: -u=google)
 :reset, :reload   : restart the application
-:q, :quit, :exit  : close the application
+:q, :quit, :exit  : close the application ------------------------------> Done!
 
 NOTES:
  1. You can specify more options in a row, separated by spaces.
- 2. A stdin option is valid only if it begins with '=', ';' or ':'.
+ 2. A stdin option is valid only if it begins with '=', ';' or ':'. ----> Done!
  3. Quoting a group of space separated keywords or option-values,
     the group will be considered a single keyword or a single value.
 
@@ -109,9 +109,9 @@ NOTES:
 (First prompt help)
 ```
 # Base
-[keywords]        : search for YouTube videos ------------------------> Done!
-[youtube-url]     : play a video by YouTube URL ----------------------> Done!
-:v(ideoid)=ID     : play videos by YouTube video IDs -----------------> Done!
+[keywords]        : search for YouTube videos
+[youtube-url]     : play a video by YouTube URL
+:v(ideoid)=ID     : play videos by YouTube video IDs
 [playlist-url]    : display videos from a playlistURL
 :playlist=ID      : display videos from a playlistID
 
