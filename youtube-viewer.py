@@ -37,20 +37,15 @@ alan = "Allan please add details"
 # Configuration file
 #~~~~~~~~~~~~~~~~~~~~
 
-def config_dir() -> str:
-    """Makes sure the configuration directory exists
+def config_file() -> None:
+    """Makes sure the configuration file exists
     """
-    
+
     appdata = os.getenv('APPDATA')
     data = os.path.join(appdata, pkgname)
     os.makedirs(data,exist_ok=True)
 
-    return data
-
-def config_file(data_dir: str) -> None:
-    """Makes sure the configuration file exists
-    """
-    config = os.path.join(data_dir, pkgname+'.conf')
+    config = os.path.join(data, pkgname+'.conf')
 
     if os.path.isfile(config):
         pass
@@ -311,22 +306,7 @@ def echo_VideosSearch_info(search: dict) -> None:
     This function analizes the desired data to be aquired
     and prints it in a human legible way.
 
-    If ['publishedTime'] is None on the VideosSearch dictionary, that
-    means that the video is live, therefore a second dictionary must
-    be obtain by calling Video.getInfo for that specific video. The
-    output is obtained in an abbreviated form (e.g 5y) by calling an
-    external function.
-
     TODO: Save the Video.getInfo dictionary to speed up selection.
-
-    To double check it is live, ['isLiveNow'] is read. If it returns
-    the bool "Ture" then the str "LIVE" is assigned to the variable.
-
-    Live videos give a different dictionary, but for the search
-    output it is only needed to extract ['publishDate'] and
-    ['viewCount']['text']. The latter is a str of the number and it
-    is converted to an abbreviated form (e.g. 15M) by calling
-    and external function.
 
     KNOWN BUGS: UTF-8 chars like emojis will not display correctly on
                 Windows PowerShell or Windows CMD and it will not ever
@@ -439,7 +419,7 @@ def echo_Videoget_info(id: str) -> None:
 #~~~~~~~~~~~
 # Main loop
 #~~~~~~~~~~~
-configJson  = config_file( config_dir() )
+configJson  = config_file()
 cfg   = json.load( open(configJson) )
 
 def rick() -> None:
