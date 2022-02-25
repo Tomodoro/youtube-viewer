@@ -1,4 +1,4 @@
-pkgver = "0.1.0-alpha.5"
+pkgver = "0.1.0-alpha.6"
 """Youtube Viewer - %s
 
 Copyright (C) 2022 Tomodoro *EMAIL REDACTED*
@@ -14,7 +14,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #-------------------------------------------------------
 #  youtube-viewer
 #  Created on: 14 February 2022
-#  Latest edit on: 20 February 2022
+#  Latest edit on: 25 February 2022
 #  https://github.com/Tomodoro/youtube-viewer
 #-------------------------------------------------------
 
@@ -36,19 +36,6 @@ alan = "Allan please add details"
 #~~~~~~~~~~~~~~~~~~~~
 # Configuration file
 #~~~~~~~~~~~~~~~~~~~~
-
-class obj:
-    """A generic class to hold the configuration file
-    """
-    
-    def __init__(self, dict1):
-        self.__dict__.update(dict1)
-
-def dict2obj(dict1):
-    """Turns a dictionary into an object
-    """
-    
-    return json.loads(json.dumps(dict1), object_hook=obj)
 
 def config_dir() -> str:
     """Makes sure the configuration directory exists
@@ -77,14 +64,14 @@ def config_file(data_dir: str) -> None:
     "video_players": {
         "mpv":
             {
-                "arg": "--really-quiet --force-media-title=*TITLE*",
+                "arg": "--really-quiet --force-media-title=*TITLE* *VIDEO*",
                 "cmd": "mpv",
                 "fs": "--fullscreen",
                 "novideo": "--no-video"
             },
         "vlc":
             {
-                "arg": "--quiet --play-and-exit --no-video-title-show --input-title-format=*TITLE*",
+                "arg": "--quiet --play-and-exit --no-video-title-show --input-title-format=*TITLE* *VIDEO*",
                 "cmd": "vlc",
                 "fs": "--fullscreen",
                 "novideo": "--novideo"
@@ -143,7 +130,7 @@ def terminal_width() -> int:
     If 1 (true), the output will adjust to the current terminal width
     If 0 (false), the output will be fixed to 70 chars
     """
-    opt = configClass.get_term_width
+    opt = cfg['get_term_width']
     
     if int(opt) == 1:
         size = os.get_terminal_size()
@@ -167,31 +154,29 @@ def check_media_player(player: str) -> None:
 
     else: print("\n[!] Please install a supported video player! (e.g.: mpv)\n")
 
-def play(novideo: bool, fs: bool, id: str, title: str, extra: str ="") -> None:
+def play(nv: bool, fs: bool, id: str, title: str, extra: str ="") -> None:
     """Plays the youtube link using the selected media player
     """
-    
-    if novideo:
-        program_novideo = configClass.video_players.mpv.novideo
-        
-    else:
-        program_novideo = ""
 
-    if fs:
-        program_fs = configClass.video_players.mpv.fs
-        
-    else:
-        program_fs = ""
+    sep = " "
+    program = cfg['video_player_selected']
 
-    program = configClass.video_player_selected
+    program_nv = lambda boolean: cfg['video_players'][program]['novideo'] if boolean else ""
+    program_fs = lambda boolean: cfg['video_players'][program]['fs']      if boolean else ""
 
-    program_cmd = configDict['video_players'][program]['cmd']
-    program_arg = configDict['video_players'][program]['arg']
+    program_cmd = cfg['video_players'][program]['cmd']
+    program_arg = cfg['video_players'][program]['arg']
 
-    program_arg = program_arg.replace("*TITLE*",'"'+title+'"')
+    video = cfg['youtube_video_url'] + id
 
-    cmd = program_cmd +" "+ program_fs +" "+ program_novideo +" "+ program_arg +" "+ configClass.youtube_video_url+id +" "+ extra
-    os.system(cmd)
+    program_arg = program_arg.replace("*TITLE*", '"'+title+'"')
+    program_arg = program_arg.replace("*VIDEO*", '"'+video+'"')
+
+    os.system( program_cmd + sep \
+               + program_fs(fs) + sep \
+               + program_nv(nv) + sep \
+               + program_arg + sep \
+               + extra )
     
 #~~~~~~~~~~~~~~~~~~~~~~~
 # Print formated output
@@ -397,7 +382,7 @@ def echo_VideosSearch_info(search: dict) -> None:
         else:
             published = publish_compact(published)
 
-        if int(configClass.ascii_mode) == int(1):
+        if int(cfg['ascii_mode']) == int(1):
             vid_title, chl_title = ascii_workaround(vid_title,chl_title)
 
         c_total = terminal_width()
@@ -455,8 +440,7 @@ def echo_Videoget_info(id: str) -> None:
 # Main loop
 #~~~~~~~~~~~
 configJson  = config_file( config_dir() )
-configDict   = json.load( open(configJson) )
-configClass  = dict2obj(configDict)
+cfg   = json.load( open(configJson) )
 
 def rick() -> None:
     print ('\033[1A> Rick Astley - Never Gonna Give You Up (Official Music Video)')
@@ -466,7 +450,7 @@ def rick() -> None:
 first_prompt = "=>> Search for YouTube videos (:h for help) \n> "
 
 def main(PS1):
-    check_media_player(configClass.video_player_selected)
+    check_media_player(cfg['video_player_selected'])
     search = None
     search_list = []
     search_index = 0
@@ -572,24 +556,18 @@ def main(PS1):
                     echo_VideosSearch_info(search_list[search_index])
 
             elif inp[0:5] == "info=":
-                number = inp.replace("info=", "")
-                if not number.isdigit():
-                    print ("\n[!] No video selected!")
-                    echo_VideosSearch_info(search_list[search_index])
-
-                elif int(number) > len(search_list[search_index]['result']):
-                    print ("\n[!] No video selected!")
-                    echo_VideosSearch_info(search_list[search_index])
-
-                elif int(number) <= 0:
-                    print ("\n[!] No video selected!")
-                    echo_VideosSearch_info(search_list[search_index])  
-
-                else:
+                number = inp.replace("i=", "")
+                if number.isdigit() \
+                   and int(number) <= len(search_list[search_index]['result']) \
+                   and int(number) >= 0:
                     id = search_list[search_index]['result'][int(number)-1]['id']
                     echo_Videoget_info(id)
                     aga = input("\n=>> Press ENTER to continue...")
                     print (aga)
+
+                else:
+                    print ("\n[!] No video selected!")
+                    echo_VideosSearch_info(search_list[search_index])
 
             # :page=i : jump to page i of results
             elif inp[0:5] == "page=":
@@ -669,7 +647,7 @@ def main(PS1):
         elif inp[:4] == "http":
             # [youtube-url] : play a video by YouTube URL
             # [playlist-url] : display videos from a playlistURL
-            id = inp.replace(configClass.youtube_video_url, "")
+            id = inp.replace(cfg['youtube_video_url'], "")
             echo_Videoget_info(id)
             play(novideo, fullscreen, id, "")
 
