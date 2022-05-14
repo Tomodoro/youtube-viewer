@@ -23,6 +23,9 @@ pip3 install --user youtube-search-python
 All* programs can be easily installed with [Chocolatey](https://chocolatey.org/) and get automatically added to PATH.
 
 ## Known issues
+
+> Support for VLC will be removed since mpv does not have this issues.
+
 1. *VLC must be added to path manually.
 
 ~~2. VLC gets pushed to the background with `:!video` and it must be closed from Task Manager.~~
@@ -35,6 +38,8 @@ All* programs can be easily installed with [Chocolatey](https://chocolatey.org/)
 
 - [x] Implement `:back` function
     - [x] Save result pages into array
+- [ ] Provide custom mpv.conf files
+    - [ ] Live videos do not need big-cache active
 - [ ] Implement multiple-select reproduction
     - [ ] Save input into array
     - [ ] Apply regex on input
@@ -46,6 +51,7 @@ All* programs can be easily installed with [Chocolatey](https://chocolatey.org/)
     - [ ] Put this setting on configuration file
 - [ ] Add support for playlists
     - [ ] Differentiate `watch?v=` from `playlist?list=`
+    - [ ] Create local playlists with text files
 - [ ] Complete functionality of the interactive help from Trizen
 
 (Complete help)
