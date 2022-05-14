@@ -382,7 +382,7 @@ def echo_VideosSearch_info(search: dict) -> None:
             c_dif = c_dif - int(1)
 
         c3 = c_dif//5
-        c2 = c_dif-c3
+        c2 = c_dif-c3-2
 
         print (vid_number.rjust(c1)+'.', end=" ")
         print (vid_title[0:(c2-1)].ljust(c2), end=" ")
