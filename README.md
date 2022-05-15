@@ -12,27 +12,18 @@ All credits go to Trizen's [`youtube-viewer`](https://github.com/trizen/youtube-
 **Program**: mpv (recommended)<br>
 **Program**: yt-dlp<br>
 **Program**: Python 3<br>
-**Program**: vlc (alternative to mpv)<br>
 
-pip packages: youtube-search-python
+pip packages:
 ```
 pip3 install --user youtube-search-python
 ```
-
 
 All* programs can be easily installed with [Chocolatey](https://chocolatey.org/) and get automatically added to PATH.
 
 ## Known issues
 
-> Support for VLC will be removed since mpv does not have this issues.
-
-1. *VLC must be added to path manually.
-
-~~2. VLC gets pushed to the background with `:!video` and it must be closed from Task Manager.~~
-
-2. VLC will always show GUI, even with `!video` option.
-3. VLC *needs* that `youtube-dl` is available on PATH, even if it is `yt-dlp` renamed.
-4. json module from python cannot handle backslashes, therefore the full path of vlc excecutable cannot be set there
+1. The display of playlists shows 100 items at a time, it should only show 20 per page.
+2. Going to the next page of a playlist with `:n` appends the items to the current page and duplicates the page.
 
 # Roadmap
 
@@ -40,6 +31,7 @@ All* programs can be easily installed with [Chocolatey](https://chocolatey.org/)
     - [x] Save result pages into array
 - [ ] Provide custom mpv.conf files
     - [ ] Live videos do not need big-cache active
+    - [ ] Override mpv.conf with command line options
 - [ ] Implement multiple-select reproduction
     - [ ] Save input into array
     - [ ] Apply regex on input
@@ -50,7 +42,7 @@ All* programs can be easily installed with [Chocolatey](https://chocolatey.org/)
     - [ ] Use a different color for watched videos
     - [ ] Put this setting on configuration file
 - [ ] Add support for playlists
-    - [ ] Differentiate `watch?v=` from `playlist?list=`
+    - [x] Differentiate `watch?v=` from `playlist?list=`
     - [ ] Create local playlists with text files
 - [ ] Complete functionality of the interactive help from Trizen
 
@@ -61,8 +53,8 @@ All* programs can be easily installed with [Chocolatey](https://chocolatey.org/)
 [keywords]        : search for YouTube videos ---------------------------> Done!
 [youtube-url]     : play a video by YouTube URL -------------------------> Done!
 :v(ideoid)=ID     : play videos by YouTube video IDs --------------------> Done!
-[playlist-url]    : display videos from a playlistURL
-:playlist=ID      : display videos from a playlistID
+[playlist-url]    : display videos from a playlistURL -------------------> Done!
+:playlist=ID      : display videos from a playlistID --------------------> Done!
 
 # Control
 :n(ext)           : get the next page of results ------------------------> Done!
@@ -173,7 +165,7 @@ Once the last part gets arranged the program should finally hit 0.1.0 (and who k
 At the moment of writing this repository is more like a storage for the code than an active development branch, so I will not hang around very ofter.
 HOWEVER if you really like this project and would like to see it thrive, please open a pull request with your contribution.
 
-If I don't show up (I sometimes get really busy and disapear for almost a year) and that halts the development,
+If I don't show up (I sometimes get really busy and disappear for almost a year) and that halts the development,
 feel free to fork it. I don't care if someone else takes over from here, I only want this to exists. Just respect the licence.
 
 Regards, Tomodoro
