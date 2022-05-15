@@ -52,7 +52,8 @@ def config_file_write(file: str) -> None:
                 "cmd": "mpv",
                 "fs": "--fullscreen",
                 "novideo": "--no-video",
-                "vol": "--volume=*VOL*"
+                "vol": "--volume=*VOL*",
+                "nocache": "--no-cache"
             }
     },
     "youtube_video_url": "https://www.youtube.com/watch?v=",
@@ -106,6 +107,7 @@ def halp() -> None:
 
 # Extra
 :h, :help         : prints this help
+:vol=N            : set volume of the media player
 
 NOTES:
  1. A stdin option is valid only if it begins with '=', ';' or ':'.
@@ -149,38 +151,44 @@ def check_media_player(player: str) -> None:
 
     else: print("\n[!] Please install a supported video player! (e.g.: mpv)\n")
 
-def play(player, id: str, title: str, extra: str ="") -> None:
+def play(player: object, video: object, extra: str ="") -> None:
     """Plays the youtube link using the selected media player
     """
     
     nv = player.novideo
     fs = player.fullscreen
     vl = player.volume
+    ch = player.nocache
+
+    id       = video.vid_id
+    title    = video.vid_title
     
     sep = " "
     program = cfg['video_player_selected']
 
-    program_nv = lambda boolean: cfg['video_players'][program]['novideo'] if boolean else ""
-    program_fs = lambda boolean: cfg['video_players'][program]['fs']      if boolean else ""
+    program_nv = lambda boolean: cfg['video_players'][program]['novideo']  if boolean else ""
+    program_fs = lambda boolean: cfg['video_players'][program]['fs']       if boolean else ""
+    program_ch = lambda boolean: cfg['video_players'][program]['nocache']  if boolean else ""
 
     program_cmd = cfg['video_players'][program]['cmd']
     program_arg = cfg['video_players'][program]['arg']
     program_vol = cfg['video_players'][program]['vol']
 
-    video = cfg['youtube_video_url'] + id
+    url = cfg['youtube_video_url'] + id
 
     program_arg = program_arg.replace("*TITLE*", '"'+title+'"')
-    program_arg = program_arg.replace("*VIDEO*", '"'+video+'"')
+    program_arg = program_arg.replace("*VIDEO*", '"'+ url +'"')
     
     program_vol = program_vol.replace("*VOL*", str(vl))
 
     os.system( program_cmd + sep \
                + program_fs(fs) + sep \
                + program_nv(nv) + sep \
+               + program_ch(ch) + sep \
                + program_vol + sep \
                + program_arg + sep \
                + extra )
-    
+
 #~~~~~~~~~~~~~~~~~~~~~~~
 # Print formated output
 #~~~~~~~~~~~~~~~~~~~~~~~
@@ -397,12 +405,13 @@ def video_list_display(vid_list: dict) -> None:
 #~~~~~~~~~~~~~~~~~
 
 class SessionPlayerSettings:
-    def __init__(slef, nv, fs, vol):
+    def __init__(slef, nv, fs, vol, nc):
         slef.novideo = nv
         slef.fullscreen = fs
         slef.volume = vol
+        slef.nocache = nc
 
-xset = SessionPlayerSettings(False,True,50)
+xset = SessionPlayerSettings(False,True,50,False)
         
 class VideoListDisplay:
     def __init__(slef, a, b, c):
@@ -491,6 +500,19 @@ def options_input(inp: str, display: object) -> object:
         test_field(inp.replace("t=", ""))
         exit()
 
+    elif inp[0:4] == "vol=":
+        number = inp.replace("vol=", "")
+
+        if number.isdigit():
+            vol = number
+            if int(vol) > 100:
+                vol = 100
+
+        else:
+            vol = xset.volume
+
+        xset.volume = vol
+
     #~~~~~~~~~~~~~~
     # Base section
     #~~~~~~~~~~~~~~
@@ -501,14 +523,14 @@ def options_input(inp: str, display: object) -> object:
         video = VideoInfoDisplay(id)
         video.acquire_info()
         video.display_info()
-        play(xset, id, "")
+        play(xset, video)
 
     elif  inp[0:8] == "videoid=":
         id = inp.replace("videoid=", "")
         video = VideoInfoDisplay(id)
         video.acquire_info()
         video.display_info()
-        play(xset, id, "")
+        play(xset, video)
 
     # :playlistid=ID : display videos from playlistID
     elif inp [0:9] == "playlist=":
@@ -642,7 +664,7 @@ def catch_url(inp: str, display: object) -> object:
             video = VideoInfoDisplay(videoid)
             video.acquire_info()
             video.display_info()
-            play(xset, videoid, video.vid_title)
+            play(xset, video)
 
     # This is a playlist
     elif re.search("playlist", inp):
@@ -662,7 +684,7 @@ def playing_output(inp: str, display: object) -> None:
         video = VideoInfoDisplay(id)
         video.acquire_info()
         video.display_info()
-        play(xset, id, video.vid_title)
+        play(xset, video)
 
     else:
         print ("\n[!] No video selected!")
